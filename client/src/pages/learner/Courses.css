@@ -1,0 +1,130 @@
+.courses-page {
+    padding: 2rem 0;
+    min-height: calc(100vh - 80px)
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary)
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px)
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem
+}
+
+.empty-state p {
+    color: var(--text-secondary)
+}
+
+.courses-grid {
+    animation: fadeIn 0.6s ease-out
+}
+
+.course-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.3s ease
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl), var(--shadow-glow)
+}
+
+.course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem
+}
+
+.course-icon {
+    font-size: 2.5rem
+}
+
+.course-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 600
+}
+
+.course-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    line-height: 1.6
+}
+
+.course-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05)
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem
+}
+
+.meta-icon {
+    font-size: 1rem
+}
+
+.course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto
+}
+
+.course-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-success);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+.course-footer .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem
+}

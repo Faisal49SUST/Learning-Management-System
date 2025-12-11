@@ -1,0 +1,238 @@
+.quiz-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 2rem;
+}
+
+.quiz-container {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.quiz-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--bg-secondary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.quiz-close-btn:hover {
+    background: var(--bg-tertiary);
+    transform: rotate(90deg);
+}
+
+.quiz-header {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.quiz-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.quiz-header p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.quiz-progress {
+    margin-top: 1rem;
+}
+
+.quiz-progress span {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    transition: width 0.3s ease;
+}
+
+.quiz-content {
+    padding: 2rem;
+}
+
+.question-text {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    border-color: var(--primary);
+    background: var(--bg-tertiary);
+}
+
+.option-item.selected {
+    border-color: var(--primary);
+    background: var(--primary-dark);
+}
+
+.option-radio {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.option-item.selected .option-radio {
+    border-color: var(--primary);
+}
+
+.radio-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+}
+
+.option-label {
+    font-weight: 600;
+    margin-right: 0.5rem;
+    color: var(--primary-light);
+}
+
+.option-text {
+    flex: 1;
+}
+
+.quiz-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.quiz-result {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.result-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.result-icon.success {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.quiz-result h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.score-display {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 1rem 0;
+}
+
+.score-display .score {
+    color: var(--success);
+}
+
+.score-display .total {
+    color: var(--text-secondary);
+}
+
+.result-message {
+    font-size: 1.1rem;
+    margin: 1rem 0 2rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .quiz-modal {
+        padding: 1rem;
+    }
+
+    .quiz-container {
+        max-height: 95vh;
+    }
+
+    .quiz-header,
+    .quiz-content {
+        padding: 1.5rem;
+    }
+
+    .question-text {
+        font-size: 1.1rem;
+    }
+
+    .quiz-footer {
+        flex-direction: column;
+    }
+
+    .quiz-footer button {
+        width: 100%;
+    }
+}

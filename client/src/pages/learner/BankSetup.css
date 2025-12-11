@@ -1,0 +1,68 @@
+.bank-setup-container {
+    padding: 2rem 0;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center
+}
+
+.bank-setup-card {
+    max-width: 600px;
+    margin: 0 auto
+}
+
+.bank-setup-header {
+    text-align: center;
+    margin-bottom: 1.5rem
+}
+
+.bank-setup-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+.bank-setup-header p {
+    color: var(--text-secondary)
+}
+
+.bank-form small {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem
+}
+
+.info-box {
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 4px solid var(--primary);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem
+}
+
+.info-box h4 {
+    color: var(--primary-light);
+    margin-bottom: 0.5rem;
+    font-size: 1rem
+}
+
+.info-box ul {
+    list-style: none;
+    padding-left: 0
+}
+
+.info-box li {
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+    font-size: 0.9rem
+}
+
+.info-box li::before {
+    content: '✓ ';
+    color: var(--success);
+    font-weight: bold;
+    margin-right: 0.5rem
+}

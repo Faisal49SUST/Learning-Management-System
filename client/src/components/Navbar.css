@@ -1,0 +1,132 @@
+.navbar {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+    border-bottom: none;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Centered navbar when user is not logged in */
+.navbar-container.navbar-centered {
+    justify-content: center;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+}
+
+/* Logo sizing - preserve 300x150 aspect ratio */
+.navbar-logo img {
+    height: auto;
+    max-height: 100px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+/* Larger logo when centered on login/register pages */
+.navbar-centered .navbar-logo img {
+    max-height: 150px;
+    max-width: 300px;
+}
+
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background: var(--bg-tertiary);
+    color: var(--primary-light);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-role {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.btn-logout {
+    padding: 0.5rem 1.25rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .navbar-container {
+        padding: 0 1rem;
+    }
+
+    .navbar-logo img {
+        max-height: 70px;
+        max-width: 140px;
+    }
+
+    .navbar-centered .navbar-logo img {
+        max-height: 100px;
+        max-width: 200px;
+    }
+
+    .navbar-menu {
+        gap: 1rem;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    .btn-logout {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
