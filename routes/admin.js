@@ -127,4 +127,63 @@ router.get('/stats', authenticate, authorize('admin'), async (req, res) => {
     }
 });
 
+// @route   GET /api/admin/instructors
+// @desc    Get all instructors
+// @access  Private (Admin only)
+router.get('/instructors', authenticate, authorize('admin'), async (req, res) => {
+    try {
+        const instructors = await User.find({ role: 'instructor' })
+            .select('name email createdAt uploadedCourses bankAccount')
+            .populate('uploadedCourses', 'title');
+
+        res.json({
+            success: true,
+            count: instructors.length,
+            instructors
+        });
+    } catch (error) {
+        console.error('Get instructors error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// @route   GET /api/admin/learners
+// @desc    Get all learners
+// @access  Private (Admin only)
+router.get('/learners', authenticate, authorize('admin'), async (req, res) => {
+    try {
+        const learners = await User.find({ role: 'learner' })
+            .select('name email createdAt enrolledCourses bankAccount');
+
+        res.json({
+            success: true,
+            count: learners.length,
+            learners
+        });
+    } catch (error) {
+        console.error('Get learners error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// @route   GET /api/admin/courses
+// @desc    Get all courses (no materials/quiz — overview only)
+// @access  Private (Admin only)
+router.get('/courses', authenticate, authorize('admin'), async (req, res) => {
+    try {
+        const courses = await Course.find()
+            .select('title thumbnail instructorName instructor price category enrolledStudents isActive createdAt')
+            .populate('instructor', 'name email');
+
+        res.json({
+            success: true,
+            count: courses.length,
+            courses
+        });
+    } catch (error) {
+        console.error('Get courses error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 module.exports = router;
