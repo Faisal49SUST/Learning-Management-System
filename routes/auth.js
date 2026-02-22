@@ -28,6 +28,17 @@ router.post('/register', async (req, res) => {
             });
         }
 
+        // Enforce max 3 instructors
+        if (role === 'instructor') {
+            const instructorCount = await User.countDocuments({ role: 'instructor' });
+            if (instructorCount >= 3) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Maximum instructor limit reached. The LMS can only have 3 instructors.'
+                });
+            }
+        }
+
         // Create new user
         const user = new User({
             name,

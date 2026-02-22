@@ -110,6 +110,18 @@ router.post('/upload-course', authenticate, authorize('instructor'), uploadThumb
             });
         }
 
+        // Check if this instructor already has a course with the same title
+        const duplicateCourse = await Course.findOne({
+            instructor: req.user._id,
+            title: { $regex: new RegExp(`^${title.trim()}$`, 'i') } // case-insensitive exact match
+        });
+        if (duplicateCourse) {
+            return res.status(400).json({
+                success: false,
+                message: `A course with the name "${title}" already exists. Please use a different title.`
+            });
+        }
+
         // Check if instructor has bank account
         const user = await User.findById(req.user._id);
         if (!user.bankAccount?.accountNumber) {

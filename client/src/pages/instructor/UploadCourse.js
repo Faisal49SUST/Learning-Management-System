@@ -36,6 +36,8 @@ const UploadCourse = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [videoInputKey, setVideoInputKey] = useState(0);
+    const [audioInputKey, setAudioInputKey] = useState(0);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -52,10 +54,23 @@ const UploadCourse = () => {
 
     // Video handling
     const handleAddVideo = () => {
-        if (currentVideo.file) {
-            setVideos([...videos, currentVideo]);
-            setCurrentVideo({ file: null, title: '', description: '' });
+        if (!currentVideo.file) {
+            alert('⚠️ Please select a video file first before clicking "Add Video to Course".');
+            return;
         }
+
+        // Check for duplicate video file by filename
+        const isDuplicateVideo = videos.some(
+            v => v.file.name === currentVideo.file.name
+        );
+        if (isDuplicateVideo) {
+            alert(`❌ Duplicate video: "${currentVideo.file.name}" has already been added. Please choose a different file.`);
+            return;
+        }
+
+        setVideos([...videos, currentVideo]);
+        setCurrentVideo({ file: null, title: '', description: '' });
+        setVideoInputKey(prev => prev + 1);
     };
 
     const handleRemoveVideo = (index) => {
@@ -64,10 +79,23 @@ const UploadCourse = () => {
 
     // Audio handling
     const handleAddAudio = () => {
-        if (currentAudio.file) {
-            setAudios([...audios, currentAudio]);
-            setCurrentAudio({ file: null, title: '' });
+        if (!currentAudio.file) {
+            alert('⚠️ Please select an audio file first before clicking "Add Audio to Course".');
+            return;
         }
+
+        // Check for duplicate audio file by filename
+        const isDuplicateAudio = audios.some(
+            a => a.file.name === currentAudio.file.name
+        );
+        if (isDuplicateAudio) {
+            alert(`❌ Duplicate audio: "${currentAudio.file.name}" has already been added. Please choose a different file.`);
+            return;
+        }
+
+        setAudios([...audios, currentAudio]);
+        setCurrentAudio({ file: null, title: '' });
+        setAudioInputKey(prev => prev + 1);
     };
 
     const handleRemoveAudio = (index) => {
@@ -82,16 +110,37 @@ const UploadCourse = () => {
     };
 
     const handleAddQuestion = () => {
-        if (currentQuestion.question && currentQuestion.options.every(opt => opt)) {
-            setQuizQuestions([...quizQuestions, currentQuestion]);
-            setCurrentQuestion({
-                question: '',
-                options: ['', '', '', ''],
-                correctAnswer: 0
-            });
-        } else {
+        if (!currentQuestion.question || !currentQuestion.options.every(opt => opt)) {
             alert('Please fill in the question and all 4 options');
+            return;
         }
+
+        // Check for duplicate question text
+        const isDuplicate = quizQuestions.some(
+            q => q.question.trim().toLowerCase() === currentQuestion.question.trim().toLowerCase()
+        );
+        if (isDuplicate) {
+            alert('You cannot add the same question twice. Please enter a different question.');
+            return;
+        }
+
+        // Check for duplicate options set (all 4 options identical to an existing question)
+        const isDuplicateOptions = quizQuestions.some(q =>
+            q.options.every((opt, i) =>
+                opt.trim().toLowerCase() === currentQuestion.options[i].trim().toLowerCase()
+            )
+        );
+        if (isDuplicateOptions) {
+            alert('A question with the exact same options already exists. Please use different options.');
+            return;
+        }
+
+        setQuizQuestions([...quizQuestions, currentQuestion]);
+        setCurrentQuestion({
+            question: '',
+            options: ['', '', '', ''],
+            correctAnswer: 0
+        });
     };
 
     const handleRemoveQuestion = (index) => {
@@ -209,6 +258,7 @@ const UploadCourse = () => {
             console.error('Course upload error:', err);
             console.error('Error details:', err.response?.data);
             const errorMessage = err.response?.data?.message || err.message || 'Failed to upload course';
+            alert(`❌ Error: ${errorMessage}`);
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -334,9 +384,20 @@ const UploadCourse = () => {
                     <div className="input-group">
                         <label>Video File (MP4)</label>
                         <input
+                            key={videoInputKey}
                             type="file"
                             accept="video/*"
-                            onChange={(e) => setCurrentVideo({ ...currentVideo, file: e.target.files[0] })}
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                const isDuplicate = videos.some(v => v.file.name === file.name);
+                                if (isDuplicate) {
+                                    alert(`❌ Duplicate video: "${file.name}" has already been added. Please choose a different file.`);
+                                    e.target.value = ''; // clear the input
+                                    return;
+                                }
+                                setCurrentVideo({ ...currentVideo, file });
+                            }}
                         />
                     </div>
 
@@ -374,11 +435,23 @@ const UploadCourse = () => {
                     <div className="input-group">
                         <label>Audio File (MP3)</label>
                         <input
+                            key={audioInputKey}
                             type="file"
                             accept="audio/*"
-                            onChange={(e) => setCurrentAudio({ ...currentAudio, file: e.target.files[0] })}
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                const isDuplicate = audios.some(a => a.file.name === file.name);
+                                if (isDuplicate) {
+                                    alert(`❌ Duplicate audio: "${file.name}" has already been added. Please choose a different file.`);
+                                    e.target.value = ''; // clear the input
+                                    return;
+                                }
+                                setCurrentAudio({ ...currentAudio, file });
+                            }}
                         />
                     </div>
+
 
                     <button type="button" onClick={handleAddAudio} className="btn btn-secondary" disabled={!currentAudio.file}>
                         Add Audio to Course
@@ -510,8 +583,8 @@ const UploadCourse = () => {
                 <button type="submit" disabled={loading || quizQuestions.length < 10} className="btn btn-primary btn-block">
                     {loading ? 'Uploading Course...' : `Upload Course ${quizQuestions.length < 10 ? `(Need ${10 - quizQuestions.length} more quiz questions)` : ''}`}
                 </button>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 };
 

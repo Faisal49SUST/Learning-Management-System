@@ -69,16 +69,11 @@ const LearnerHome = () => {
                 </div>
             </div>
 
-            <div className="grid grid-3">
+            <div className="grid grid-2">
                 <div className="card" onClick={() => navigate('/learner/courses')} style={{ cursor: 'pointer', textAlign: 'center', padding: '2rem' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
                     <h3>Browse Courses</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>Explore available courses</p>
-                </div>
-                <div className="card" onClick={() => navigate('/learner/my-courses')} style={{ cursor: 'pointer', textAlign: 'center', padding: '2rem' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📖</div>
-                    <h3>My Courses</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>View your enrolled courses</p>
                 </div>
                 <div className="card" onClick={() => navigate('/learner/bank-setup')} style={{ cursor: 'pointer', textAlign: 'center', padding: '2rem' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>

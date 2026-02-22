@@ -61,7 +61,15 @@ const MyCourses = () => {
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
                         {filter === 'completed' ? 'Complete a course to see it here' : 'Browse courses and start learning'}
                     </p>
-                    <button className="btn btn-primary" onClick={() => navigate('/learner/courses')}>Browse Courses</button>
+                    {filter === 'completed' ? (
+                        <button className="btn btn-primary" onClick={() => navigate('/learner/my-courses')}>
+                            Go to My Enrolled Courses
+                        </button>
+                    ) : (
+                        <button className="btn btn-primary" onClick={() => navigate('/learner/courses')}>
+                            Browse Courses
+                        </button>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-2">
