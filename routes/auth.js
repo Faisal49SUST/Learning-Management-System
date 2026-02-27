@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { authenticate } = require('../middleware/auth');
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
-// @access  Public
+// route   POST /api/auth/register
+// desc    Register a new user
+// access  Public
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, role } = req.body;

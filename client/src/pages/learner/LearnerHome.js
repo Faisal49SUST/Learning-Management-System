@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import './LearnerHome.css';
 
@@ -12,7 +12,7 @@ const LearnerHome = () => {
         completedCourses: 0,
         certificates: 0
     });
-    const [recentCourses, setRecentCourses] = useState([]);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,7 +35,6 @@ const LearnerHome = () => {
                 certificates: certificates.length
             });
 
-            setRecentCourses(courses.slice(0, 3));
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -82,42 +81,7 @@ const LearnerHome = () => {
                 </div>
             </div>
 
-            {recentCourses.length > 0 && (
-                <div className="recent-courses" style={{ marginTop: '3rem' }}>
-                    <h2>Continue Learning</h2>
-                    <div className="courses-grid">
-                        {recentCourses.map(course => (
-                            <Link
-                                key={course._id}
-                                to={`/learner/course/${course.courseId?._id || course._id}`}
-                                className="course-card"
-                            >
-                                <div className="course-image">
-                                    {course.courseId?.thumbnail || course.thumbnail ? (
-                                        <img
-                                            src={course.courseId?.thumbnail || course.thumbnail}
-                                            alt={course.courseId?.title || course.title}
-                                        />
-                                    ) : (
-                                        <div className="placeholder-image">📚</div>
-                                    )}
-                                </div>
-                                <div className="course-info">
-                                    <h3>{course.courseId?.title || course.title}</h3>
-                                    <p className="course-instructor">By {course.courseId?.instructorName || course.instructor?.name}</p>
-                                    <div className="progress-bar">
-                                        <div
-                                            className="progress-fill"
-                                            style={{ width: `${course.completed ? 100 : 0}%` }}
-                                        ></div>
-                                    </div>
-                                    <p className="progress-text">{course.completed ? 100 : 0}% Complete</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
+
         </div>
     );
 };

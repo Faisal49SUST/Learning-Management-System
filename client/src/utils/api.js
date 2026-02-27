@@ -7,12 +7,12 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use(
-    (config) => {
+    (config) => {            //request
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        return config;
+        return config;   //modified request
     },
     (error) => {
         return Promise.reject(error);

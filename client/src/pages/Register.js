@@ -21,7 +21,7 @@ const Register = () => {
             [e.target.name]: e.target.value
         });
     };
-
+    // register 1
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
