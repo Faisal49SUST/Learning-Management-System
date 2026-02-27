@@ -19,13 +19,14 @@ const Login = () => {
             [e.target.name]: e.target.value
         });
     };
-
+    //login 1
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         const result = await login(formData.email, formData.password);
+        // goes to authcontext.js login()
 
         if (result.success) {
             navigate('/');

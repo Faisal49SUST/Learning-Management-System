@@ -52,23 +52,31 @@ const UploadCourse = () => {
         }
     };
 
+    // ─── File content hash (detects same file even if renamed) ───────────────────
+    const computeFileHash = async (file) => {
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        return Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    };
+
     // Video handling
-    const handleAddVideo = () => {
+    const handleAddVideo = async () => {
         if (!currentVideo.file) {
             alert('⚠️ Please select a video file first before clicking "Add Video to Course".');
             return;
         }
 
-        // Check for duplicate video file by filename
-        const isDuplicateVideo = videos.some(
-            v => v.file.name === currentVideo.file.name
-        );
+        const hash = await computeFileHash(currentVideo.file);
+        // Check by file content (catches renames of the same file)
+        const isDuplicateVideo = videos.some(v => v.hash === hash);
         if (isDuplicateVideo) {
-            alert(`❌ Duplicate video: "${currentVideo.file.name}" has already been added. Please choose a different file.`);
+            alert('❌ Duplicate video: This file has already been added (same content detected, even with a different name).');
             return;
         }
 
-        setVideos([...videos, currentVideo]);
+        setVideos([...videos, { ...currentVideo, hash }]);
         setCurrentVideo({ file: null, title: '', description: '' });
         setVideoInputKey(prev => prev + 1);
     };
@@ -78,22 +86,21 @@ const UploadCourse = () => {
     };
 
     // Audio handling
-    const handleAddAudio = () => {
+    const handleAddAudio = async () => {
         if (!currentAudio.file) {
             alert('⚠️ Please select an audio file first before clicking "Add Audio to Course".');
             return;
         }
 
-        // Check for duplicate audio file by filename
-        const isDuplicateAudio = audios.some(
-            a => a.file.name === currentAudio.file.name
-        );
+        const hash = await computeFileHash(currentAudio.file);
+        // Check by file content (catches renames of the same file)
+        const isDuplicateAudio = audios.some(a => a.hash === hash);
         if (isDuplicateAudio) {
-            alert(`❌ Duplicate audio: "${currentAudio.file.name}" has already been added. Please choose a different file.`);
+            alert('❌ Duplicate audio: This file has already been added (same content detected, even with a different name).');
             return;
         }
 
-        setAudios([...audios, currentAudio]);
+        setAudios([...audios, { ...currentAudio, hash }]);
         setCurrentAudio({ file: null, title: '' });
         setAudioInputKey(prev => prev + 1);
     };

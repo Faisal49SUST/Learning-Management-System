@@ -27,7 +27,7 @@ const Register = () => {
         setError('');
         setLoading(true);
 
-        const result = await register(formData);
+        const result = await register(formData);//passes to authcontext.js register()
 
         if (result.success) {
             navigate('/');

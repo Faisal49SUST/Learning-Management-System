@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 
 const InstructorCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCourses();
@@ -20,16 +22,6 @@ const InstructorCourses = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Delete this course?')) return;
-        try {
-            await api.delete(`/courses/${id}`);
-            fetchCourses();
-        } catch (err) {
-            alert('Failed to delete course');
-        }
-    };
-
     if (loading) return <div className="loading-container"><div className="spinner"></div></div>;
 
     return (
@@ -43,7 +35,7 @@ const InstructorCourses = () => {
                 <div className="grid grid-2">
                     {courses.map((course) => (
                         <div key={course._id} className="card" style={{ overflow: 'hidden', padding: 0 }}>
-                            {/* Thumbnail Image */}
+                            {/* Thumbnail */}
                             <div style={{
                                 width: '100%',
                                 height: '200px',
@@ -78,13 +70,14 @@ const InstructorCourses = () => {
                                     <div>Price: ৳{course.price}</div>
                                     <div>Students: {course.enrolledStudents?.length || 0}</div>
                                     <div>Materials: {course.materials?.length || 0}</div>
+                                    <div>Quiz Questions: {course.quizQuestions?.length || 0}</div>
                                 </div>
                                 <button
-                                    onClick={() => handleDelete(course._id)}
-                                    className="btn btn-secondary"
+                                    onClick={() => navigate(`/instructor/edit-course/${course._id}`)}
+                                    className="btn btn-primary"
                                     style={{ width: '100%' }}
                                 >
-                                    Delete Course
+                                    ✏️ Edit Course
                                 </button>
                             </div>
                         </div>

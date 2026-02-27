@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
         checkAuth();
     }, []);
-
+    //login 2
     const login = async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password });
@@ -62,6 +62,9 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const response = await api.post('/auth/register', userData);
+            //goes to api interceptor to add token with request , null because no token exist whiel registering
+            // request goes to backends server.js
+            // gets routed to auth.js register 
             const { token, user: newUser } = response.data;
 
             localStorage.setItem('token', token);

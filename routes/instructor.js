@@ -725,4 +725,82 @@ router.post('/courses/:id/upload-textbook', authenticate, authorize('instructor'
     }
 });
 
+// @route   PUT /api/instructor/courses/:id
+// @desc    Update course metadata and/or thumbnail
+// @access  Private (Instructor only)
+router.put('/courses/:id', authenticate, authorize('instructor'), uploadThumbnail.single('thumbnail'), async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.id);
+
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        if (course.instructor.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+
+        const { title, description, price, category, duration } = req.body;
+
+        // Check for duplicate title (exclude current course)
+        if (title && title.trim() !== course.title) {
+            const duplicate = await Course.findOne({
+                instructor: req.user._id,
+                _id: { $ne: course._id },
+                title: { $regex: new RegExp(`^${title.trim()}$`, 'i') }
+            });
+            if (duplicate) {
+                return res.status(400).json({
+                    success: false,
+                    message: `A course with the name "${title}" already exists. Please use a different title.`
+                });
+            }
+        }
+
+        if (title) course.title = title;
+        if (description) course.description = description;
+        if (price !== undefined) course.price = parseFloat(price);
+        if (category) course.category = category;
+        if (duration) course.duration = duration;
+        if (req.file) course.thumbnail = req.file.path; // new Cloudinary URL
+
+        await course.save();
+
+        res.json({ success: true, message: 'Course updated successfully', course });
+    } catch (error) {
+        console.error('Update course error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// @route   DELETE /api/instructor/courses/:courseId/materials/:materialId
+// @desc    Remove a single material (video/audio) from a course
+// @access  Private (Instructor only)
+router.delete('/courses/:courseId/materials/:materialId', authenticate, authorize('instructor'), async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.courseId);
+
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        if (course.instructor.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+
+        const material = course.materials.id(req.params.materialId);
+        if (!material) {
+            return res.status(404).json({ success: false, message: 'Material not found' });
+        }
+
+        course.materials.pull(req.params.materialId);
+        await course.save();
+
+        res.json({ success: true, message: 'Material removed successfully' });
+    } catch (error) {
+        console.error('Delete material error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 module.exports = router;

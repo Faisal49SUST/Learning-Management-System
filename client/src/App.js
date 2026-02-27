@@ -16,6 +16,7 @@ import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import InstructorCourses from './pages/instructor/InstructorCourses';
 import InstructorStudents from './pages/instructor/InstructorStudents';
 import UploadCourse from './pages/instructor/UploadCourse';
+import EditCourse from './pages/instructor/EditCourse';
 import Earnings from './pages/instructor/Earnings';
 import InstructorBankSetup from './pages/instructor/InstructorBankSetup';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/instructor/my-courses" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorCourses /></ProtectedRoute>} />
                 <Route path="/instructor/students" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorStudents /></ProtectedRoute>} />
                 <Route path="/instructor/upload" element={<ProtectedRoute allowedRoles={['instructor']}><UploadCourse /></ProtectedRoute>} />
+                <Route path="/instructor/edit-course/:id" element={<ProtectedRoute allowedRoles={['instructor']}><EditCourse /></ProtectedRoute>} />
                 <Route path="/instructor/earnings" element={<ProtectedRoute allowedRoles={['instructor']}><Earnings /></ProtectedRoute>} />
                 <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/" element={user ? (

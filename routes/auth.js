@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { authenticate } = require('../middleware/auth');
 
-// route   POST /api/auth/register
-// desc    Register a new user
-// access  Public
+//register 3
+
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
@@ -47,7 +46,7 @@ router.post('/register', async (req, res) => {
             role: role || 'learner'
         });
 
-        await user.save();
+        await user.save();//goes to user.js to hash password
 
         // Create JWT token
         const token = jwt.sign(
@@ -76,9 +75,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// @route   POST /api/auth/login
-// @desc    Login user
-// @access  Public
+//login 3
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -91,7 +88,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Check if user exists
+        // Check if user exists or email valid
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
@@ -102,6 +99,7 @@ router.post('/login', async (req, res) => {
 
         // Verify password
         const isMatch = await user.comparePassword(password);
+        // goes to user.js and hashes the typed password and matches it with previously stored password
         if (!isMatch) {
             return res.status(401).json({
                 success: false,
