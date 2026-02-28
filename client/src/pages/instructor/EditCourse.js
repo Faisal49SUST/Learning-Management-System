@@ -124,29 +124,19 @@ const EditCourse = () => {
         }
     };
 
-    // ─── File content hash (detects same file even if renamed) ─────────────────
-    const computeFileHash = async (file) => {
-        const buffer = await file.arrayBuffer();
-        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-    };
-
     // ─── New video handling ─────────────────────────────────────────────────────
-    const handleAddVideo = async () => {
+    const handleAddVideo = () => {
         if (!currentVideo.file) {
             alert('⚠️ Please select a video file first.');
             return;
         }
-        const hash = await computeFileHash(currentVideo.file);
-        // Check same file content already queued (catches renames)
-        const isDupNew = newVideos.some(v => v.hash === hash);
+        // Check against already-queued new videos by filename
+        const isDupNew = newVideos.some(v => v.file.name === currentVideo.file.name);
         if (isDupNew) {
-            alert('❌ This video file has already been added (same content detected, even with a different name).');
+            alert(`❌ "${currentVideo.file.name}" has already been added to the upload queue.`);
             return;
         }
-        // Check against existing videos by title (DB materials have no stored file hash)
+        // Check against existing videos already in the course (compare by title)
         const isDupExisting = existingVideos.some(
             v => v.title.trim().toLowerCase() === (currentVideo.title || currentVideo.file.name).trim().toLowerCase()
         );
@@ -154,7 +144,7 @@ const EditCourse = () => {
             alert(`❌ A video titled "${currentVideo.title || currentVideo.file.name}" already exists in this course.`);
             return;
         }
-        setNewVideos([...newVideos, { ...currentVideo, hash }]);
+        setNewVideos([...newVideos, currentVideo]);
         setCurrentVideo({ file: null, title: '', description: '' });
         setVideoInputKey(prev => prev + 1);
     };
@@ -162,19 +152,18 @@ const EditCourse = () => {
     const handleRemoveNewVideo = (index) => setNewVideos(newVideos.filter((_, i) => i !== index));
 
     // ─── New audio handling ─────────────────────────────────────────────────────
-    const handleAddAudio = async () => {
+    const handleAddAudio = () => {
         if (!currentAudio.file) {
             alert('⚠️ Please select an audio file first.');
             return;
         }
-        const hash = await computeFileHash(currentAudio.file);
-        // Check same file content already queued (catches renames)
-        const isDupNew = newAudios.some(a => a.hash === hash);
+        // Check against already-queued new audio by filename
+        const isDupNew = newAudios.some(a => a.file.name === currentAudio.file.name);
         if (isDupNew) {
-            alert('❌ This audio file has already been added (same content detected, even with a different name).');
+            alert(`❌ "${currentAudio.file.name}" has already been added to the upload queue.`);
             return;
         }
-        // Check against existing audio by title (DB materials have no stored file hash)
+        // Check against existing audio already in the course (compare by title)
         const isDupExisting = existingAudios.some(
             a => a.title.trim().toLowerCase() === (currentAudio.title || currentAudio.file.name).trim().toLowerCase()
         );
@@ -182,7 +171,7 @@ const EditCourse = () => {
             alert(`❌ An audio titled "${currentAudio.title || currentAudio.file.name}" already exists in this course.`);
             return;
         }
-        setNewAudios([...newAudios, { ...currentAudio, hash }]);
+        setNewAudios([...newAudios, currentAudio]);
         setCurrentAudio({ file: null, title: '' });
         setAudioInputKey(prev => prev + 1);
     };

@@ -34,7 +34,7 @@ const InstructorCourses = () => {
             ) : (
                 <div className="grid grid-2">
                     {courses.map((course) => (
-                        <div key={course._id} className="card" style={{ overflow: 'hidden', padding: 0 }}>
+                        <div key={course._id} className="card" style={{ overflow: 'hidden', padding: 0, display: 'flex', flexDirection: 'column' }}>
                             {/* Thumbnail */}
                             <div style={{
                                 width: '100%',
@@ -55,7 +55,7 @@ const InstructorCourses = () => {
                             </div>
 
                             {/* Course Info */}
-                            <div style={{ padding: '1.5rem' }}>
+                            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                                     <span className="badge badge-primary">{course.category}</span>
                                     <span className={`badge ${course.isActive ? 'badge-success' : 'badge-warning'}`}>
@@ -75,7 +75,7 @@ const InstructorCourses = () => {
                                 <button
                                     onClick={() => navigate(`/instructor/edit-course/${course._id}`)}
                                     className="btn btn-primary"
-                                    style={{ width: '100%' }}
+                                    style={{ width: '100%', marginTop: 'auto' }}
                                 >
                                     ✏️ Edit Course
                                 </button>
