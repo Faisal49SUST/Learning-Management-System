@@ -101,7 +101,7 @@ router.post('/upload-course', authenticate, authorize('instructor'), uploadThumb
             });
         }
 
-        // Check 5-course limit as per project requirements
+        // Check 5-course limit
         const totalCourses = await Course.countDocuments({ isActive: true });
         if (totalCourses >= 5) {
             return res.status(400).json({
@@ -163,7 +163,7 @@ router.post('/upload-course', authenticate, authorize('instructor'), uploadThumb
                 accountNumber: process.env.LMS_BANK_ACCOUNT,
                 accountHolderName: 'LMS Organization',
                 secret: 'lms-secret-key',
-                balance: 100000, // Initial LMS balance
+                balance: 30000, // Initial LMS balance
                 accountType: 'lms'
             });
             await lmsAccount.save();
@@ -423,9 +423,6 @@ router.get('/pending-payments', authenticate, authorize('instructor'), async (re
     }
 });
 
-// @route   POST /api/instructor/courses/:id/upload-video
-// @desc    Upload video to course
-// @access  Private (Instructor only)
 router.post('/courses/:id/upload-video', authenticate, authorize('instructor'), uploadVideo.single('video'), async (req, res) => {
     try {
         const { title, description } = req.body;
@@ -458,9 +455,6 @@ router.post('/courses/:id/upload-video', authenticate, authorize('instructor'), 
     }
 });
 
-// @route   POST /api/instructor/courses/:id/upload-audio
-// @desc    Upload audio to course
-// @access  Private (Instructor only)
 router.post('/courses/:id/upload-audio', authenticate, authorize('instructor'), uploadAudio.single('audio'), async (req, res) => {
     try {
         const { title } = req.body;
@@ -560,7 +554,7 @@ router.delete('/courses/:courseId/quiz/:questionId', authenticate, authorize('in
             return res.status(403).json({ success: false, message: 'Not authorized' });
         }
 
-        course.quizQuestions.id(req.params.questionId).remove();
+        course.quizQuestions.pull(req.params.questionId);
         await course.save();
 
         res.json({ success: true, course });
@@ -680,9 +674,7 @@ router.delete('/courses/:courseId/quiz/:questionId', authenticate, authorize('in
     }
 });
 
-// @route   POST /api/instructor/courses/:id/upload-textbook
-// @desc    Upload textbook content and PDF for a course
-// @access  Private (Instructor only)
+
 router.post('/courses/:id/upload-textbook', authenticate, authorize('instructor'), uploadPdf.single('pdf'), async (req, res) => {
     try {
         const { textContent } = req.body;
@@ -705,8 +697,8 @@ router.post('/courses/:id/upload-textbook', authenticate, authorize('instructor'
         if (req.file) {
             course.textbookPdf = {
                 url: req.file.path, // Cloudinary URL
-                publicId: req.file.filename, // Cloudinary public ID
-                filename: req.file.originalname // Original filename
+                publicId: req.file.filename,
+                filename: req.file.originalname
             };
         }
 

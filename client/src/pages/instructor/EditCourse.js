@@ -26,6 +26,10 @@ const EditCourse = () => {
     const [existingQuizQuestions, setExistingQuizQuestions] = useState([]);
     const [existingPdf, setExistingPdf] = useState(null);
 
+    // Staged deletes: IDs to remove on Save (so Cancel truly cancels them)
+    const [pendingVideoDeletes, setPendingVideoDeletes] = useState([]);
+    const [pendingAudioDeletes, setPendingAudioDeletes] = useState([]);
+
     // New materials to add
     const [newVideos, setNewVideos] = useState([]);
     const [currentVideo, setCurrentVideo] = useState({ file: null, title: '', description: '' });
@@ -51,35 +55,37 @@ const EditCourse = () => {
     const [error, setError] = useState('');
 
     // ─── Load existing course ───────────────────────────────────────────────────
-    useEffect(() => {
-        const fetchCourse = async () => {
-            try {
-                const res = await api.get('/instructor/my-courses');
-                const course = res.data.courses.find(c => c._id === id);
-                if (!course) {
-                    setError('Course not found');
-                    setLoading(false);
-                    return;
-                }
-                setFormData({
-                    title: course.title,
-                    description: course.description,
-                    price: course.price,
-                    category: course.category || 'Programming',
-                    duration: course.duration || '4 weeks'
-                });
-                setCurrentThumbnail(course.thumbnail || '');
-                setExistingVideos(course.materials?.filter(m => m.type === 'video') || []);
-                setExistingAudios(course.materials?.filter(m => m.type === 'audio') || []);
-                setExistingQuizQuestions(course.quizQuestions || []);
-                setExistingPdf(course.textbookPdf?.url ? course.textbookPdf : null);
-            } catch (err) {
-                setError('Failed to load course');
-            } finally {
-                setLoading(false);
+    const fetchCourse = async (showLoader = true) => {
+        if (showLoader) setLoading(true);
+        try {
+            const res = await api.get('/instructor/my-courses');
+            const course = res.data.courses.find(c => c._id === id);
+            if (!course) {
+                setError('Course not found');
+                return;
             }
-        };
+            setFormData({
+                title: course.title,
+                description: course.description,
+                price: course.price,
+                category: course.category || 'Programming',
+                duration: course.duration || '4 weeks'
+            });
+            setCurrentThumbnail(course.thumbnail || '');
+            setExistingVideos(course.materials?.filter(m => m.type === 'video') || []);
+            setExistingAudios(course.materials?.filter(m => m.type === 'audio') || []);
+            setExistingQuizQuestions(course.quizQuestions || []);
+            setExistingPdf(course.textbookPdf?.url ? course.textbookPdf : null);
+        } catch (err) {
+            setError('Failed to load course');
+        } finally {
+            if (showLoader) setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchCourse();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -93,27 +99,20 @@ const EditCourse = () => {
         }
     };
 
-    // ─── Remove existing material immediately via API ────────────────────────────
-    const handleRemoveExistingVideo = async (material) => {
-        if (!window.confirm(`Remove video "${material.title}"?`)) return;
-        try {
-            await api.delete(`/instructor/courses/${id}/materials/${material._id}`);
-            setExistingVideos(prev => prev.filter(v => v._id !== material._id));
-        } catch (err) {
-            alert('Failed to remove video. Please try again.');
-        }
+    // ─── Stage video/audio removals locally (executed only on Save) ─────────────
+    const handleRemoveExistingVideo = (material) => {
+        if (!window.confirm(`Remove video "${material.title}"? This will take effect when you Save Changes.`)) return;
+        setExistingVideos(prev => prev.filter(v => v._id !== material._id));
+        setPendingVideoDeletes(prev => [...prev, material._id]);
     };
 
-    const handleRemoveExistingAudio = async (material) => {
-        if (!window.confirm(`Remove audio "${material.title}"?`)) return;
-        try {
-            await api.delete(`/instructor/courses/${id}/materials/${material._id}`);
-            setExistingAudios(prev => prev.filter(a => a._id !== material._id));
-        } catch (err) {
-            alert('Failed to remove audio. Please try again.');
-        }
+    const handleRemoveExistingAudio = (material) => {
+        if (!window.confirm(`Remove audio "${material.title}"? This will take effect when you Save Changes.`)) return;
+        setExistingAudios(prev => prev.filter(a => a._id !== material._id));
+        setPendingAudioDeletes(prev => [...prev, material._id]);
     };
 
+    // ─── Remove existing quiz question immediately via API ───────────────────────
     const handleRemoveExistingQuestion = async (question) => {
         if (!window.confirm('Remove this quiz question?')) return;
         try {
@@ -247,7 +246,17 @@ const EditCourse = () => {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            // Step 2: Upload new videos
+            // Step 2: Execute staged video deletes
+            for (const materialId of pendingVideoDeletes) {
+                await api.delete(`/instructor/courses/${id}/materials/${materialId}`);
+            }
+
+            // Step 3: Execute staged audio deletes
+            for (const materialId of pendingAudioDeletes) {
+                await api.delete(`/instructor/courses/${id}/materials/${materialId}`);
+            }
+
+            // Step 4: Upload new videos
             for (const video of newVideos) {
                 const videoData = new FormData();
                 videoData.append('video', video.file);
@@ -258,7 +267,7 @@ const EditCourse = () => {
                 });
             }
 
-            // Step 3: Upload new audio
+            // Step 5: Upload new audio
             for (const audio of newAudios) {
                 const audioData = new FormData();
                 audioData.append('audio', audio.file);
@@ -268,12 +277,12 @@ const EditCourse = () => {
                 });
             }
 
-            // Step 4: Add new quiz questions
+            // Step 6: Add new quiz questions
             for (const question of newQuizQuestions) {
                 await api.post(`/instructor/courses/${id}/quiz`, question);
             }
 
-            // Step 5: Upload new textbook PDF (optional, non-fatal)
+            // Step 7: Upload new textbook PDF (optional, non-fatal)
             if (newTextbookPdf) {
                 try {
                     const pdfData = new FormData();
@@ -285,6 +294,17 @@ const EditCourse = () => {
                     console.error('Textbook PDF upload failed (non-critical):', pdfErr);
                 }
             }
+
+            // Clear pending queues and new-item queues
+            setPendingVideoDeletes([]);
+            setPendingAudioDeletes([]);
+            setNewVideos([]);
+            setNewAudios([]);
+            setNewQuizQuestions([]);
+
+            // Re-fetch course so newly saved quiz questions have their MongoDB _id
+            // This allows them to be deleted immediately after saving
+            await fetchCourse(false);
 
             setMessage('Course updated successfully!');
             setTimeout(() => navigate('/instructor/my-courses'), 1800);
@@ -686,7 +706,15 @@ const EditCourse = () => {
 
                 {/* ── Submit ── */}
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button type="button" onClick={() => navigate('/instructor/my-courses')}
+                    <button type="button" onClick={() => {
+                        // Discard all staged/pending changes and navigate away
+                        setPendingVideoDeletes([]);
+                        setPendingAudioDeletes([]);
+                        setNewVideos([]);
+                        setNewAudios([]);
+                        setNewQuizQuestions([]);
+                        navigate('/instructor/my-courses');
+                    }}
                         className="btn btn-primary" style={{ flex: 1 }} disabled={saving}>
                         Cancel
                     </button>
